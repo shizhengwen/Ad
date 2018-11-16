@@ -63,8 +63,6 @@ def addAdvertising(request):
         source = request.POST.get('source')
         url = request.POST.get('URL')
         imgs = request.FILES.getlist('img')
-        print(imgs)
-        print(title,source,url)
         article = Article(title=title,source=source,url=url)
         try:
             article.head_img = fileUtil.article_dir_path(article,imgs[0]) 
@@ -87,7 +85,6 @@ def dologin(request):
     name = request.POST.get("username")
     pwd = request.POST.get("password")
     accont = Accont.objects.filter(name=name,password=pwd)
-    print(accont)
     response = {'msg':'','code':0}
     if len(accont) == 0:
         response['msg'] = '用户名或密码错误'
