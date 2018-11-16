@@ -5,6 +5,7 @@ from django.shortcuts import render_to_response
 from app01.models import Accont , Article
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import app01.fileUtil as fileUtil
+import json
 # Create your views here.
 
 def getAdvertisingList(request):
@@ -57,22 +58,29 @@ def addAdvertising(request):
     '''
         添加文章
     '''
-    #response = {'msg':'','code':0}
+    response = {'msg':'','code':0}
     if request.method == 'POST':
         title = request.POST.get('title')
         source = request.POST.get('source')
-        url = request.POST.get('URL')
+        url =request.POST.get('URL')
         imgs = request.FILES.getlist('img')
         article = Article(title=title,source=source,url=url)
-        try:
-            article.head_img = fileUtil.article_dir_path(article,imgs[0]) 
-            article.head_img2 = fileUtil.article_dir_path(article,imgs[1])
-            article.head_img3 = fileUtil.article_dir_path(article,imgs[2])
-        except IndexError:
-            pass
-        finally:
-            article.save()
-            return render_to_response('article-add.html')
+        art = Article.objects.filter(title=title)
+        if len(art) == 0:
+            try:
+                article.head_img = fileUtil.article_dir_path(article,imgs[0]) 
+                article.head_img2 = fileUtil.article_dir_path(article,imgs[1])
+                article.head_img3 = fileUtil.article_dir_path(article,imgs[2])
+            except IndexError:
+                pass
+            finally:
+                article.save()
+                response['msg'] = '添加成功'
+                response['code'] = 1
+        else:
+            response['msg'] = '标题已存在'
+            response['code'] = 0
+        return JsonResponse(response)
 
 
 def loginHtml(request):
@@ -110,6 +118,8 @@ def get_all_information(request):
     '''
         获取所有资讯
     '''
+    print(1111111111111111111111111111111111111111111111)
+    
     allArticle = list(Article.objects.all().values("id","title","source","head_img","head_img2","head_img3","url"))
     count = len(allArticle)
     response = {'count':count, 'date': allArticle}

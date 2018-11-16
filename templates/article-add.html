@@ -19,7 +19,7 @@
   
   <body>
     <div class="x-body">
-        <form class="layui-form" enctype="multipart/form-data" method="POST" action="/addad/">
+        <form class="layui-form" id="formdata" enctype="multipart/form-data" method="POST" action="/addad/">
           <div class="layui-form-item">
               <label for="title" class="layui-form-label">
                   <span class="x-red">*</span>标题
@@ -51,17 +51,23 @@
                     图片
                 </label>
                 <div class="layui-input-inline">
-                    <input type="file" id="img" name="img"  lay-verify="img"
-                    autocomplete="off" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg" multiple />
+                    <button type="button" class="layui-btn" id="upload">
+                        <i class="layui-icon">&#xe67c;</i>上传图片
+                    </button>
+                    <input  type="file" id="img" name="img"  lay-verify="img"
+                    autocomplete="off" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg" multiple style="display:none;"/>
                 </div>
             </div>
             <div class="layui-form-item">
-                <div id="imgdiv"></div>
+                    <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                            预览图：
+                            <div class="layui-upload-list" id="imgdiv"></div>
+                         </blockquote>
             </div>
             <div class="layui-form-item">
               <label for="L_repass" class="layui-form-label">
               </label>
-              <button id="add"  class="layui-btn" lay-filter="add" lay-submit="" >
+              <button  id="add"  class="layui-btn" lay-filter="add" lay-submit="" >
                   增加
               </button>
             </div>
@@ -69,6 +75,9 @@
     </div>
     <script>
         $(function(){
+            $("#upload").click(function(){
+                $("#img").click();
+            });
             $("#img").change(function(){
                 $("#imgdiv").empty()
                 var files = this.files;
@@ -84,7 +93,7 @@
                             var fileReader = new FileReader()
                             fileReader.readAsDataURL(file)
                             fileReader.onload = function(e){
-                                $("#imgdiv").append('<img style="width:100px;" src="'+e.target.result+'" />')
+                                $("#imgdiv").append('<img style="width:100px;" src="'+e.target.result+'"  class="layui-upload-img" />')
                             }
                             return true;
                         }else{
@@ -96,10 +105,11 @@
                 }
             })
         })
-        layui.use(['form','layer'], function(){
+        layui.use(['form','layer','upload'], function(){
             $ = layui.jquery;
           var form = layui.form
-          ,layer = layui.layer;
+          ,layer = layui.layer
+        ,upload = layui.upload;
         
           //自定义验证规则
           form.verify({
@@ -109,31 +119,28 @@
               }
             }
           });
-
           //监听提交
           form.on('submit(add)', function(data){
             console.log(data);
-            var dataForm = new FormData();
-            dataForm.append('img',$("#img")[0].files)
-            dataForm.append('title',$('#title').val())
-            dataForm.append('source',$('#source').val())
-            dataForm.append('URL',$('#URL').val())
-            $.ajax({
+            var form=document.getElementById("formdata");
+            var formData=new FormData(form);
+            jQuery.ajax({
                 url:'/addad/',
                 type:'post',
-                data:dataForm,
+                processData: false,  // 告诉jQuery不要去处理发送的数据
+                contentType: false ,
+                data:formData,
                 dataType:'json',
                 success:function(data){
-                    alert(data.code)
                     if(data.code == 1){
-                        layer.alert("增加成功", {icon: 6},function () {
+                        layer.alert(data.msg, {icon: 6},function () {
                         // 获得frame索引
                         var index = parent.layer.getFrameIndex(window.name);
                         //关闭当前frame
                         parent.layer.close(index);
                         });
                     }else{
-                        layer.alert("增加失败", {icon: 2},function () {
+                        layer.alert(data.msg, {icon: 2},function () {
                         // 获得frame索引
                         var index = parent.layer.getFrameIndex(window.name);
                         //关闭当前frame
@@ -142,12 +149,6 @@
                     }
                 }
             })
-            layer.alert("增加成功", {icon: 6},function () {
-                        // 获得frame索引
-                        var index = parent.layer.getFrameIndex(window.name);
-                        //关闭当前frame
-                        parent.layer.close(index);
-                        });
             return false;
           });
         });
