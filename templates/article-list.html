@@ -24,9 +24,9 @@
             <td>{{ advertising.id }}</td>
             <td><a href="{{ advertising.url }}">{{ advertising.title }}</a></td>
             <td>{{ advertising.source }}</td>
-            <td><img src="{% static advertising.head_img  %}"/></td>
-            <td><img src="{% static advertising.head_img2  %}"/></td>
-            <td><img src="{% static advertising.head_img3  %}"/></td>
+            <td><img src="{{ advertising.head_img  }}"/></td>
+            <td><img src="{{ advertising.head_img2  }}"/></td>
+            <td><img src="{{ advertising.head_img3  }}"/></td>
             <td>{{ advertising.date |date:"Y-m-d H:i:s" }}</td>
             <td class="td-manage">
               <!-- <a title="编辑"  onclick="x_admin_show('编辑','admin-edit.html')" href="javascript:;">

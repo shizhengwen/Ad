@@ -20,7 +20,7 @@ def article_dir_path(article,file):
             print('保存了图片')
         except:
             pass
-    return "/{0}/{1}/{2}/{3}".format('article','img' ,article.title,  filename)
+    return "/{0}/{1}/{2}/{3}/{4}".format('static','article','img' ,article.title,  filename)
 
 
 
