@@ -28,7 +28,7 @@ class Accont(models.Model):
 class Article(models.Model):
     """文章资讯"""
     title = models.CharField(max_length=255, unique=True, db_index=True, verbose_name="标题")
-    source = models.CharField("ArticleSource", verbose_name="来源")
+    source = models.CharField(max_length=255, verbose_name="来源")
     head_img = models.CharField(max_length=255)
     head_img2 = models.CharField(max_length=255)
     head_img3 = models.CharField(max_length=255)

@@ -1,0 +1,109 @@
+{% extends 'index.html'%}
+{% block content %}
+    <div class="x-body">
+      <xblock>
+        <button class="layui-btn" onclick="x_admin_show('添加广告','/addhtm/')"><i class="layui-icon"></i>添加</button>
+        <span class="x-right" style="line-height:40px">共有数据：{{count}} 条</span>
+      </xblock>
+      <table class="layui-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>标题</th>
+            <th>来源</th>
+            <th>图片1</th>
+            <th>图片2</th>
+            <th>图片3</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+          {% load static %}
+          {% for advertising in advertisings %}
+          <tr>
+            <td>{{ advertising.id }}</td>
+            <td><a href="{{ advertising.url }}">{{ advertising.title }}</a></td>
+            <td>{{ advertising.source }}</td>
+            <td><img src="{% static advertising.head_img  %}"/></td>
+            <td><img src="{% static advertising.head_img2  %}"/></td>
+            <td><img src="{% static advertising.head_img3  %}"/></td>
+            <td>{{ advertising.date |date:"Y-m-d H:i:s" }}</td>
+            <td class="td-manage">
+              <!-- <a title="编辑"  onclick="x_admin_show('编辑','admin-edit.html')" href="javascript:;">
+                <i class="layui-icon">&#xe642;</i>
+              </a> -->
+              <a title="删除" onclick="member_del(this,'{{ advertising.id }}')" href="javascript:;">
+                <i class="layui-icon">&#xe640;</i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="page">
+        <div>
+          {% if advertisings.has_previous %}
+          <a class="prev" href="/adlist/?page={{ advertisings.previous_page_number }}">&lt;&lt;</a>
+          {% endif %}
+          {% for pg in advertisings.paginator.page_range %}
+            {% if pg == advertisings.number %}
+              <span class="current">{{ pg }}</span>
+            {% else %}
+              <a class="num" href="/adlist/?page={{ pg }}">{{ pg }}</a>
+            {% endif %}
+          {% endfor %}
+          {% if advertisings.has_next %}
+            <a class="next" href="/adlist/?page={{ advertisings.next_page_number }}">&gt;&gt;</a>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+    <script>
+      layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+      });
+
+      /*广告-删除*/
+      function member_del(obj,id){
+          layer.confirm('确认要删除吗？',function(index){
+              //发异步删除数据
+              jQuery.ajax({
+                url:'/delad/',
+                type:'post',
+                data:{'id':id},
+                dataType:'json',
+                success:function(data){
+                  if(data.code == 1){
+                    $(obj).parents("tr").remove();
+                    layer.msg(data.msg,{icon:1,time:1000});
+                  }else{
+                    layer.msg(data.msg,{icon:2,time:1000});
+                  }
+                },
+              })
+          });
+      }
+
+      function delAll (argument) {
+
+        var data = tableCheck.getData();
+  
+        layer.confirm('确认要删除吗？'+data,function(index){
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('删除成功', {icon: 1});
+            $(".layui-form-checked").not('.header').parents('tr').remove();
+        });
+      }
+    </script>
+{% endblock %}
