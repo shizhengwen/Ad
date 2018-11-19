@@ -8,8 +8,8 @@ def article_dir_path(article,file):
         filename = file.name
         ext = filename.split('.')[-1]
         filename = '{}.{}'.format(uuid.uuid4().hex[:8], ext)
-        print(os.path.abspath('.'))
         dirPath = os.path.join(settings.STATICFILES_DIRS[0],'article','img' ,article.title)
+        dirPath = "".join(dirPath.split())
         if not os.path.isdir(dirPath):
             os.makedirs(dirPath)
         imgpath = os.path.join(dirPath, filename)
@@ -20,7 +20,7 @@ def article_dir_path(article,file):
             print('保存了图片')
         except:
             pass
-    return "/{0}/{1}/{2}/{3}/{4}".format('static','article','img' ,article.title,  filename)
+    return "/{0}/{1}/{2}/{3}/{4}".format('static','article','img' ,"".join(article.title.split()),  filename)
 
 
 

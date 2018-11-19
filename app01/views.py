@@ -118,7 +118,6 @@ def get_all_information(request):
     '''
         获取所有资讯
     '''
-    print(1111111111111111111111111111111111111111111111)
     
     allArticle = list(Article.objects.all().values("id","title","source","head_img","head_img2","head_img3","url"))
     count = len(allArticle)
