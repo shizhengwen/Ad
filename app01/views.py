@@ -52,10 +52,7 @@ def delAdvertising(request):
         return render_to_response('404.html')
 
 def addAdvertisingHtml(request):
-    if request.method == 'POST':
-        return render_to_response('article-add.html')
-    else:
-        return render_to_response('404.html')
+    return render_to_response('article-add.html')
 
 def updAdvertising(request):
     pass
