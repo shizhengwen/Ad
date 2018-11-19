@@ -13,7 +13,6 @@ def article_dir_path(article,file):
         if not os.path.isdir(dirPath):
             os.makedirs(dirPath)
         imgpath = os.path.join(dirPath, filename)
-        print(imgpath)
         img = Image.open(file)
         try:
             img.save(imgpath) #路径(绝对/相对)

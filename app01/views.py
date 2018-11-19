@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse,HttpResponseRedirect,Http404
 from django.template.loader import get_template
 from django.template import Context
-from django.shortcuts import render_to_response 
+from django.shortcuts import render_to_response, render
 from app01.models import Accont , Article
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import app01.fileUtil as fileUtil
@@ -12,22 +12,19 @@ def getAdvertisingList(request):
     '''
         分页显示文章
     '''
-    if request.session.get("is_login",None):
-        username = request.session['username']
-        allArticle = Article.objects.all()
-        count = len(allArticle)
-        paginator = Paginator(allArticle,10)
-        page = request.GET.get('page')
-        try:
-            articles = paginator.page(page)
-        except PageNotAnInteger:
-            articles = paginator.page(1)
-        except EmptyPage:
-            articles = paginator.page(paginator.num_pages)
-        response = {'count':count,'advertisings':articles,'username':username}
-        return render_to_response('article-list.html',response)
-    else:
-        return render_to_response('login.html')
+    username = request.session['username']
+    allArticle = Article.objects.all()
+    count = len(allArticle)
+    paginator = Paginator(allArticle,10)
+    page = request.GET.get('page')
+    try:
+        articles = paginator.page(page)
+    except PageNotAnInteger:
+        articles = paginator.page(1)
+    except EmptyPage:
+        articles = paginator.page(paginator.num_pages)
+    response = {'count':count,'advertisings':articles,'username':username}
+    return render_to_response('article-list.html',response)
 
 def delAdvertising(request):
     '''
@@ -116,11 +113,8 @@ def logout(request):
     '''
         退出登录
     '''
-    if request.method == 'POST':
-        request.session.clear()
-        return render_to_response('login.html')
-    else:
-        return render_to_response('404.html')
+    request.session.clear()
+    return render_to_response('login.html')
 
 def get_all_information(request):
     '''
