@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse,HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse,HttpResponseRedirect,Http404
 from django.template.loader import get_template
 from django.template import Context
 from django.shortcuts import render_to_response 
@@ -33,23 +33,29 @@ def delAdvertising(request):
     '''
         删除文章
     '''
-    article = Article.objects.get(id=request.POST.get('id'))
-    response = {'msg':'','code':0}
-    if article == None:
-        response['msg'] = '该文章不存在'
-        response['code'] = 0
-    else:
-        res = article.delete()
-        if res[0] == 1:
-            response['msg'] = '删除成功'
-            response['code'] = 1
-        else:
-            response['msg'] = '删除失败'
+    if request.method == 'POST':
+        article = Article.objects.get(id=request.POST.get('id'))
+        response = {'msg':'','code':0}
+        if article == None:
+            response['msg'] = '该文章不存在'
             response['code'] = 0
-    return JsonResponse(response)
+        else:
+            res = article.delete()
+            if res[0] == 1:
+                response['msg'] = '删除成功'
+                response['code'] = 1
+            else:
+                response['msg'] = '删除失败'
+                response['code'] = 0
+        return JsonResponse(response)
+    else:
+        return render_to_response('404.html')
 
 def addAdvertisingHtml(request):
-    return render_to_response('article-add.html')
+    if request.method == 'POST':
+        return render_to_response('article-add.html')
+    else:
+        return render_to_response('404.html')
 
 def updAdvertising(request):
     pass
@@ -81,6 +87,8 @@ def addAdvertising(request):
             response['msg'] = '标题已存在'
             response['code'] = 0
         return JsonResponse(response)
+    else:
+        return render_to_response('404.html')
 
 
 def loginHtml(request):
@@ -90,35 +98,37 @@ def dologin(request):
     '''
         登录
     '''
-    name = request.POST.get("username")
-    pwd = request.POST.get("password")
-    accont = Accont.objects.filter(name=name,password=pwd)
-    response = {'msg':'','code':0}
-    if len(accont) == 0:
-        response['msg'] = '用户名或密码错误'
-        response['code'] = 0
+    if request.method == 'POST':
+        name = request.POST.get("username")
+        pwd = request.POST.get("password")
+        accont = Accont.objects.filter(name=name,password=pwd)
+        response = {'msg':'','code':0}
+        if len(accont) == 0:
+            response['msg'] = '用户名或密码错误'
+            response['code'] = 0
+        else:
+            request.session['username'] = name
+            request.session["is_login"] = True
+            response['msg'] = '登录成功'
+            response['code'] = 1
+        return JsonResponse(response)
     else:
-        request.session['username'] = name
-        request.session["is_login"] = True
-        response['msg'] = '登录成功'
-        response['code'] = 1
-    return JsonResponse(response)
-
+        return render_to_response('login.html')
 
 def logout(request):
     '''
         退出登录
     '''
-    request.session.clear()
-    return render_to_response('login.html')
-
-
+    if request.method == 'POST':
+        request.session.clear()
+        return render_to_response('login.html')
+    else:
+        return render_to_response('404.html')
 
 def get_all_information(request):
     '''
         获取所有资讯
     '''
-    
     allArticle = list(Article.objects.all().values("id","title","source","head_img","head_img2","head_img3","url"))
     count = len(allArticle)
     response = {'count':count, 'date': allArticle}

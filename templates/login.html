@@ -45,11 +45,11 @@
                     dataType:'json',
                     success:function(data){
                         if(data.code == 1){
-                            layer.msg(data.msg,function(){
+                            layer.msg(data.msg,{icon:1,time:500},function(){
                                 location.href='/adlist/'
                             });
                         }else{
-                            layer.msg(data.msg);
+                            layer.msg(data.msg,{icon:0,time:1000});
                         }
                     }
                 })
