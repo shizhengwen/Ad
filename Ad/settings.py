@@ -25,6 +25,7 @@ SECRET_KEY = '&9mzr97rkohlyujwc-e1lgyw8e_zm0s*$=%@o70#qo=ro49r^8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# ALLOWED_HOSTS = ['112.74.177.117', 'localhost', '0.0.0.0:8000', '127.0.0.1']
 ALLOWED_HOSTS = ['*']
 
 
@@ -38,22 +39,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app01.apps.App01Config',
+    'app01',
 ]
-
-
 
 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.common.CommonMiddleware',
-    'corsheaders.middleware.CorsMiddleware', 'django.middleware.common.CommonMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'app01.loginMiddleware.LoginMiddleware',
 ]
 
 ROOT_URLCONF = 'Ad.urls'
@@ -74,7 +73,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Ad.wsgi.application'
+SGI_APPLICATION = 'Ad.wsgi.application'
 
 
 # Database
@@ -123,7 +122,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
+USE_X_FORWARDED_HOST = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -137,10 +136,31 @@ MEDIA_DIRS = (os.path.join(BASE_DIR, 'media'),)
 
 
 TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
-CORS_ORIGIN_ALLOW_ALL = True 
-CORS_ALLOW_CREDENTIALS = True
 
 # session 设置
 SESSION_COOKIE_AGE = 60 * 30 # 30分钟
 SESSION_SAVE_EVERY_REQUEST = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True # 关闭浏览器，则COOKIE失效
+
+
+#CORS_ORIGIN_ALLOW_ALL = True 
+CORS_ALLOW_CREDENTIALS = True
+
+#CORS_ORIGIN_REGEX_WHITELIST =(r'\d+\.\d+\.\d+\.\d+',)
+CORS_ORIGIN_WHITELIST =(
+    '192.168.1.101:8080',
+    '192.168.43.28:8080',
+    'localhost:8080'
+
+)
+
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)
