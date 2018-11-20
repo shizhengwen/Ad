@@ -8,6 +8,18 @@ import app01.fileUtil as fileUtil
 import json
 # Create your views here.
 
+def is_login(func):
+    '''
+        登录装饰器
+    '''
+    def wrapper(request):
+        if request.session.get('is_login', None):
+            return func(request)
+        else:
+            return HttpResponseRedirect('/login/')
+    return wrapper
+
+@is_login
 def getAdvertisingList(request):
     '''
         分页显示文章
@@ -26,6 +38,7 @@ def getAdvertisingList(request):
     response = {'count':count,'advertisings':articles,'username':username}
     return render_to_response('article-list.html',response)
 
+@is_login
 def delAdvertising(request):
     '''
         删除文章
@@ -48,12 +61,14 @@ def delAdvertising(request):
     else:
         return render_to_response('404.html')
 
+@is_login
 def addAdvertisingHtml(request):
     return render_to_response('article-add.html')
 
 def updAdvertising(request):
     pass
 
+@is_login
 def addAdvertising(request):
     '''
         添加文章
@@ -109,6 +124,7 @@ def dologin(request):
     else:
         return render_to_response('login.html')
 
+@is_login
 def logout(request):
     '''
         退出登录
