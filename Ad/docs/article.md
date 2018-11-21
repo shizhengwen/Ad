@@ -10,7 +10,8 @@
 - Require Auth:
     - False
 - Require params:
-    - none 无
+    - page  @int 页码
+    - count  @int 每页资讯数
 - Return:
 
 正常数据:模板一

@@ -136,9 +136,21 @@ def get_all_information(request):
     '''
         获取所有资讯
     '''
+    try :
+        count = int(request.GET.get('count'))
+    except:
+        count = 10
+    print(count)
     allArticle = list(Article.objects.all().values("id","title","source","head_img","head_img2","head_img3","url"))
-    count = len(allArticle)
-    response = {'count':count, 'date': allArticle}
+    paginator = Paginator(allArticle,count)
+    page = request.GET.get('page')
+    try:
+        articles = paginator.page(page)
+    except PageNotAnInteger:
+        articles = paginator.page(1)
+    except EmptyPage:
+        articles = paginator.page(paginator.num_pages)
+    response = {'count':count, 'date': list(articles)}
     resp = HttpResponse(json.dumps(response))
     resp['Access-Control-Allow-Origin'] = '*'
     return resp
