@@ -74,6 +74,7 @@ def addAdvertising(request):
         添加文章
     '''
     response = {'msg':'','code':0}
+    host_url = 'http://'+request.get_host()
     if request.method == 'POST':
         title = request.POST.get('title')
         source = request.POST.get('source')
@@ -83,9 +84,9 @@ def addAdvertising(request):
         art = Article.objects.filter(title=title)
         if len(art) == 0:
             try:
-                article.head_img = fileUtil.article_dir_path(article,imgs[0]) 
-                article.head_img2 = fileUtil.article_dir_path(article,imgs[1])
-                article.head_img3 = fileUtil.article_dir_path(article,imgs[2])
+                article.head_img = host_url + fileUtil.article_dir_path(article,imgs[0]) 
+                article.head_img2 = host_url + fileUtil.article_dir_path(article,imgs[1])
+                article.head_img3 = host_url + fileUtil.article_dir_path(article,imgs[2])
             except IndexError:
                 pass
             finally:
@@ -140,7 +141,6 @@ def get_all_information(request):
         count = int(request.GET.get('count'))
     except:
         count = 10
-    print(count)
     allArticle = list(Article.objects.all().values("id","title","source","head_img","head_img2","head_img3","url"))
     paginator = Paginator(allArticle,count)
     page = request.GET.get('page')
