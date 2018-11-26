@@ -48,75 +48,63 @@
               </div>
           </div>
             <div class="layui-form-item">
-                <label for="img" class="layui-form-label">
-                    图片
-                </label>
-                <div class="layui-input-inline">
-                    <button type="button" class="layui-btn" id="upload">
-                        <i class="layui-icon">&#xe67c;</i>上传图片
-                    </button>
-                    <input  type="file" id="img" name="img"  lay-verify="img"
-                    autocomplete="off" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg" multiple style="display:none;"/>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                    <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
-                            预览图：
-                            <div class="layui-upload-list" id="imgdiv">
-                                {% if data.head_img != "" %}
-                                <img style="width:100px;" src="{{ data.head_img }}" class="layui-upload-img" />
-                                {% endif %}
-                                {% if data.head_img2 != "" %}
-                                <img style="width:100px;" src="{{ data.head_img2 }}" class="layui-upload-img" />
-                                {% endif %}
-                                {% if data.head_img3 != "" %}
-                                <img style="width:100px;" src="{{ data.head_img3 }}" class="layui-upload-img" />
-                                {% endif %}
-                            </div>
-                         </blockquote>
+                <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                    图片：
+                    <div class="layui-upload-list" id="imgdiv">
+                        <img id="headimg" title="上传第一张图片" src='{{ data.head_img | default:"/static/images/up.png" }}' class="layui-upload-img" />
+                        <input  type="file" id="head_img" name="head_img"  lay-verify="img" autocomplete="off" 
+                            accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"  style="display:none;"/>
+                        <img id="headimg2" title="上传第二张图片" src='{{ data.head_img2 | default:"/static/images/up.png" }}' class="layui-upload-img" />
+                        <input  type="file" id="head_img2" name="head_img2"  lay-verify="img" autocomplete="off" 
+                            accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"  style="display:none;"/>
+                        <img id="headimg3" title="上传第三张图片" src='{{ data.head_img3 | default:"/static/images/up.png" }}' class="layui-upload-img" />
+                        <input  type="file" id="head_img3" name="head_img3"  lay-verify="img" autocomplete="off" 
+                            accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"  style="display:none;"/>
+                    </div>
+                </blockquote>
             </div>
             <div class="layui-form-item">
               <label for="L_repass" class="layui-form-label">
               </label>
               <button  id="add"  class="layui-btn" lay-filter="add" lay-submit="" >
-                  增加
+                  修改
               </button>
             </div>
       </form>
       {% else %}
       <div>{{ msg }}</div>
       {% endif %}
-
     </div>
     <script>
         $(function(){
-            $("#upload").click(function(){
-                $("#img").click();
-            });
-            $("#img").change(function(){
-                $("#imgdiv").empty()
-                var files = this.files;
-                var acceptType = $("#img").attr('accept');
-                if(files && files.length > 3){
-                    layer.msg('图片不能超过三张',{icon:2,time:1000});
-                    this.value = ''
-                    return false
-                }else{
-                    $.each(files,function(index,file){
-                        var hz = file.name.substring(file.name.lastIndexOf('.')+1,file.name.length)
-                        if(acceptType.indexOf(hz) > -1){
-                            var fileReader = new FileReader()
-                            fileReader.readAsDataURL(file)
-                            fileReader.onload = function(e){
-                                $("#imgdiv").append('<img style="width:100px;" src="'+e.target.result+'"  class="layui-upload-img" />')
-                            }
-                            return true;
-                        }else{
-                            layer.msg('请选择图片',{icon:2,time:1000});
-                            this.value = ''
-                            return false;
-                        }
-                    })
+            $("#headimg").click(function(){
+                $("#head_img").click()
+            })
+            $("#head_img").change(function(){
+                var fileReader = new FileReader()
+                fileReader.readAsDataURL(this.files[0])
+                fileReader.onload = function(e){
+                    $("#headimg").attr('src',e.target.result)
+                }
+            })
+            $("#headimg2").click(function(){
+                $("#head_img2").click()
+            })
+            $("#head_img2").change(function(){
+                var fileReader = new FileReader()
+                fileReader.readAsDataURL(this.files[0])
+                fileReader.onload = function(e){
+                    $("#headimg2").attr('src',e.target.result)
+                }
+            })
+            $("#headimg3").click(function(){
+                $("#head_img3").click()
+            })
+            $("#head_img3").change(function(){
+                var fileReader = new FileReader()
+                fileReader.readAsDataURL(this.files[0])
+                fileReader.onload = function(e){
+                    $("#headimg3").attr('src',e.target.result)
                 }
             })
         })
@@ -125,7 +113,6 @@
           var form = layui.form
           ,layer = layui.layer
         ,upload = layui.upload;
-        
           //自定义验证规则
           form.verify({
             title: function(value){
@@ -139,6 +126,7 @@
             console.log(data);
             var form=document.getElementById("formdata");
             var formData=new FormData(form);
+            console.log(formData)
             jQuery.ajax({
                 url:'/editarticle/',
                 type:'post',
@@ -153,7 +141,6 @@
                         var index = parent.layer.getFrameIndex(window.name);
                         //关闭当前frame
                         parent.layer.close(index);
-                        window.opener.parent.location.reload();
                         });
                     }else{
                         layer.alert(data.msg, {icon: 2},function () {

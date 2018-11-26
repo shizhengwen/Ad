@@ -5,6 +5,9 @@ from PIL import Image
 import shutil
 
 def article_dir_path(article,file):
+    '''
+        保存上传的图片并返回图片url
+    '''
     if file: 
         filename = file.name
         ext = filename.split('.')[-1]
@@ -27,12 +30,40 @@ def defFile(filepath):
     '''
             删除filepath目录
     '''
-    title = filepath.split('/')[-2]
+    try:
+        title = filepath.split('/')[-2]
+        dirPath = os.path.join(settings.STATICFILES_DIRS[0],'article','img' ,title)
+        if  os.path.isdir(dirPath):
+            shutil.rmtree(dirPath)
+            return True
+    except:
+        pass
+
+def editImg(article,file,oldimgurl):
+    '''
+        修改图片返回图片url
+    '''
+    title = str(uuid.uuid5(uuid.NAMESPACE_DNS,article.title))
+    title = ''.join(title.split('-'))
     dirPath = os.path.join(settings.STATICFILES_DIRS[0],'article','img' ,title)
-    if  os.path.isdir(dirPath):
-        shutil.rmtree(dirPath)
-        return True
-
-
+    if not os.path.isdir(dirPath):
+        os.makedirs(dirPath)
+    if file:
+        if oldimgurl != '':
+            filename = oldimgurl.split('/')[-1]
+            imgpath = os.path.join(dirPath, filename)
+            img = Image.open(file)
+            try:
+                img.save(imgpath) 
+            except:
+                pass
+            filename = "/{0}/{1}/{2}/{3}/{4}".format('static','article','img' ,title,  filename)
+        else:
+            filename = article_dir_path(article,file)
+        return filename
+    else:
+        return ''
+        
+    
 
 

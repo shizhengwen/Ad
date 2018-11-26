@@ -98,11 +98,10 @@ def addAdvertising(request):
     else:
         return render_to_response('404.html')
 
-
+@is_login
 def editArticleHtm(request):
     response = {'msg':'','code':0}
     id = request.GET.get('id')
-    print(id)
     try:
         article = Article.objects.get(id=id)  
         response['data'] = article
@@ -114,8 +113,6 @@ def editArticleHtm(request):
     finally:
         return render_to_response('article-edit.html',response) 
 
-
-
 @is_login
 def updAdvertising(request):
     '''
@@ -125,33 +122,34 @@ def updAdvertising(request):
     host_url = 'http://'+request.get_host()
     if request.method == 'POST':
         id = request.POST.get('id')
-        #article = Article(title=title,source=source,url=url)
         art = Article.objects.filter(id=id)
         if len(art) != 0:
             article = Article.objects.get(id=id)
             article.title = request.POST.get('title')
             article.source = request.POST.get('source')
             article.url =request.POST.get('URL')
-            imgs = request.FILES.getlist('img')
-            oldimgurl = article.head_img
-            fileUtil.defFile(oldimgurl)
-            try:
-                article.head_img = host_url + fileUtil.article_dir_path(article,imgs[0]) 
-                article.head_img2 = host_url + fileUtil.article_dir_path(article,imgs[1])
-                article.head_img3 = host_url + fileUtil.article_dir_path(article,imgs[2])
-            except IndexError:
-                pass
-            finally:
-                article.save()
-                response['msg'] = '修改成功'
-                response['code'] = 1
+            head_img = request.FILES.get('head_img')
+            head_img2 = request.FILES.get('head_img2')
+            head_img3 = request.FILES.get('head_img3')
+            
+            head_imgurl = fileUtil.editImg(article, head_img, article.head_img)
+            article.head_img  = article.head_img if head_imgurl == '' else host_url + head_imgurl
+
+            head_imgurl = fileUtil.editImg(article, head_img2, article.head_img2)
+            article.head_img2 = article.head_img2 if head_imgurl == '' else host_url + head_imgurl
+
+            head_imgurl = fileUtil.editImg(article, head_img3, article.head_img3)
+            article.head_img3 =  article.head_img3 if head_imgurl == '' else host_url + head_imgurl
+
+            article.save()
+            response['msg'] = '修改成功'
+            response['code'] = 1
         else:
             response['msg'] = '资讯不存在'
             response['code'] = 0
         return JsonResponse(response)
     else:
         return render_to_response('404.html')
-
 
 def loginHtml(request):
     return render_to_response('login.html')
@@ -185,11 +183,6 @@ def logout(request):
     request.session.clear()
     return render_to_response('login.html')
 
-
-
-
-
-
 def get_all_information(request):
     '''
         获取所有资讯
@@ -205,7 +198,6 @@ def get_all_information(request):
     allArticle = list(Article.objects.all().values("id","title","source","head_img","head_img2","head_img3","url"))
     paginator = Paginator(allArticle,count)
     num_pages = paginator.num_pages
-    print(num_pages)
     if page > num_pages:
         articles = []
     else:

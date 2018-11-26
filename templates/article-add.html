@@ -109,7 +109,6 @@
           var form = layui.form
           ,layer = layui.layer
         ,upload = layui.upload;
-        
           //自定义验证规则
           form.verify({
             title: function(value){
@@ -137,7 +136,6 @@
                         var index = parent.layer.getFrameIndex(window.name);
                         //关闭当前frame
                         parent.layer.close(index);
-                        location.reload()
                         });
                     }else{
                         layer.alert(data.msg, {icon: 2},function () {

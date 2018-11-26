@@ -18,6 +18,12 @@ body{
     width: 100%;
     min-height: 100%;
 }
+
+#imgdiv img{
+    max-width:100px;
+    margin-right: 15px;
+}
+
 .login-bg{
     /*background: #eeeeee url() 0 0 no-repeat;*/
      background:url(../images/bg.png) no-repeat center;
