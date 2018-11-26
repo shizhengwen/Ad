@@ -3,6 +3,7 @@ import Ad.settings as settings
 import os
 from PIL import Image
 import shutil
+import urllib
 
 def article_dir_path(article,file):
     '''
@@ -57,7 +58,7 @@ def editImg(host_url,article,file,oldimgurl):
             img = Image.open(file)
             try:
                 img.save(imgpath)
-                oldimgurl = oldimgurl.replace(host_url,'')
+                oldimgurl = oldimgurl.replace(host_url,'')[1:]
                 os.remove(oldimgurl)
             except Exception as e:
                 print(e)
