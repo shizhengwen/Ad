@@ -27,4 +27,6 @@ urlpatterns = [
     path('login/', views.loginHtml),
     path('logout/', views.logout),
     path('information/all/',views.get_all_information),
+    path('editHtml/', views.editArticleHtm),
+    path('editarticle/',views.updAdvertising)
 ]

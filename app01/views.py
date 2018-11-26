@@ -50,6 +50,7 @@ def delAdvertising(request):
             response['msg'] = '该文章不存在'
             response['code'] = 0
         else:
+            fileUtil.defFile(article.head_img)
             res = article.delete()
             if res[0] == 1:
                 response['msg'] = '删除成功'
@@ -64,9 +65,6 @@ def delAdvertising(request):
 @is_login
 def addAdvertisingHtml(request):
     return render_to_response('article-add.html')
-
-def updAdvertising(request):
-    pass
 
 @is_login
 def addAdvertising(request):
@@ -95,6 +93,60 @@ def addAdvertising(request):
                 response['code'] = 1
         else:
             response['msg'] = '标题已存在'
+            response['code'] = 0
+        return JsonResponse(response)
+    else:
+        return render_to_response('404.html')
+
+
+def editArticleHtm(request):
+    response = {'msg':'','code':0}
+    id = request.GET.get('id')
+    print(id)
+    try:
+        article = Article.objects.get(id=id)  
+        response['data'] = article
+        response['code'] = 1
+        response['msg'] = '成功'
+    except:
+        response['code'] = 0
+        response['msg'] = '资讯不存在'
+    finally:
+        return render_to_response('article-edit.html',response) 
+
+
+
+@is_login
+def updAdvertising(request):
+    '''
+        修改文章
+    '''
+    response = {'msg':'','code':0}
+    host_url = 'http://'+request.get_host()
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        #article = Article(title=title,source=source,url=url)
+        art = Article.objects.filter(id=id)
+        if len(art) != 0:
+            article = Article.objects.get(id=id)
+            article.title = request.POST.get('title')
+            article.source = request.POST.get('source')
+            article.url =request.POST.get('URL')
+            imgs = request.FILES.getlist('img')
+            oldimgurl = article.head_img
+            fileUtil.defFile(oldimgurl)
+            try:
+                article.head_img = host_url + fileUtil.article_dir_path(article,imgs[0]) 
+                article.head_img2 = host_url + fileUtil.article_dir_path(article,imgs[1])
+                article.head_img3 = host_url + fileUtil.article_dir_path(article,imgs[2])
+            except IndexError:
+                pass
+            finally:
+                article.save()
+                response['msg'] = '修改成功'
+                response['code'] = 1
+        else:
+            response['msg'] = '资讯不存在'
             response['code'] = 0
         return JsonResponse(response)
     else:
@@ -133,6 +185,11 @@ def logout(request):
     request.session.clear()
     return render_to_response('login.html')
 
+
+
+
+
+
 def get_all_information(request):
     '''
         获取所有资讯
@@ -140,16 +197,25 @@ def get_all_information(request):
     try :
         count = int(request.GET.get('count'))
     except:
-        count = 10
+        count = 20
+    try :
+        page = int(request.GET.get('page'))
+    except:
+        page = 1
     allArticle = list(Article.objects.all().values("id","title","source","head_img","head_img2","head_img3","url"))
     paginator = Paginator(allArticle,count)
-    page = request.GET.get('page')
-    try:
-        articles = paginator.page(page)
-    except PageNotAnInteger:
-        articles = paginator.page(1)
-    except EmptyPage:
-        articles = paginator.page(paginator.num_pages)
+    num_pages = paginator.num_pages
+    print(num_pages)
+    if page > num_pages:
+        articles = []
+    else:
+        try:
+            articles = paginator.page(page)
+        except PageNotAnInteger:
+            articles = paginator.page(1)
+        except EmptyPage:
+            articles = paginator.page(paginator.num_pages)
+    count = len(articles)
     response = {'count':count, 'date': list(articles)}
     resp = HttpResponse(json.dumps(response))
     resp['Access-Control-Allow-Origin'] = '*'

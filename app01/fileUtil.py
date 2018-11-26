@@ -2,6 +2,7 @@ import uuid
 import Ad.settings as settings
 import os
 from PIL import Image
+import shutil
 
 def article_dir_path(article,file):
     if file: 
@@ -21,6 +22,17 @@ def article_dir_path(article,file):
         except:
             pass
     return "/{0}/{1}/{2}/{3}/{4}".format('static','article','img' ,title,  filename)
+
+def defFile(filepath):
+    '''
+            删除filepath目录
+    '''
+    title = filepath.split('/')[-2]
+    dirPath = os.path.join(settings.STATICFILES_DIRS[0],'article','img' ,title)
+    if  os.path.isdir(dirPath):
+        shutil.rmtree(dirPath)
+        return True
+
 
 
 

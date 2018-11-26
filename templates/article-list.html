@@ -29,9 +29,9 @@
             <td><img src="{{ advertising.head_img3  }}"/></td>
             <td>{{ advertising.date |date:"Y-m-d H:i:s" }}</td>
             <td class="td-manage">
-              <!-- <a title="编辑"  onclick="x_admin_show('编辑','admin-edit.html')" href="javascript:;">
+              <a title="编辑"  onclick="x_admin_show('编辑','/editHtml/?id='+'{{ advertising.id }}')" href="javascript:;">
                 <i class="layui-icon">&#xe642;</i>
-              </a> -->
+              </a>
               <a title="删除" onclick="member_del(this,'{{ advertising.id }}')" href="javascript:;">
                 <i class="layui-icon">&#xe640;</i>
               </a>
