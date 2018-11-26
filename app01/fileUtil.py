@@ -22,8 +22,8 @@ def article_dir_path(article,file):
         img = Image.open(file)
         try:
             img.save(imgpath) #路径(绝对/相对)
-        except:
-            pass
+        except Exception as e:
+            print(e)
     return "/{0}/{1}/{2}/{3}/{4}".format('static','article','img' ,title,  filename)
 
 def defFile(filepath):
@@ -39,7 +39,7 @@ def defFile(filepath):
     except:
         pass
 
-def editImg(article,file,oldimgurl):
+def editImg(host_url,article,file,oldimgurl):
     '''
         修改图片返回图片url
     '''
@@ -50,13 +50,17 @@ def editImg(article,file,oldimgurl):
         os.makedirs(dirPath)
     if file:
         if oldimgurl != '':
-            filename = oldimgurl.split('/')[-1]
+            filename = file.name
+            ext = filename.split('.')[-1]
+            filename = '{}.{}'.format(uuid.uuid4().hex[:8], ext)
             imgpath = os.path.join(dirPath, filename)
             img = Image.open(file)
             try:
-                img.save(imgpath) 
-            except:
-                pass
+                img.save(imgpath)
+                oldimgurl = oldimgurl.replace(host_url,'')
+                os.remove(oldimgurl)
+            except Exception as e:
+                print(e)
             filename = "/{0}/{1}/{2}/{3}/{4}".format('static','article','img' ,title,  filename)
         else:
             filename = article_dir_path(article,file)

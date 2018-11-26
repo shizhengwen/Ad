@@ -132,13 +132,13 @@ def updAdvertising(request):
             head_img2 = request.FILES.get('head_img2')
             head_img3 = request.FILES.get('head_img3')
             
-            head_imgurl = fileUtil.editImg(article, head_img, article.head_img)
+            head_imgurl = fileUtil.editImg(host_url, article, head_img, article.head_img)
             article.head_img  = article.head_img if head_imgurl == '' else host_url + head_imgurl
 
-            head_imgurl = fileUtil.editImg(article, head_img2, article.head_img2)
+            head_imgurl = fileUtil.editImg(host_url, article, head_img2, article.head_img2)
             article.head_img2 = article.head_img2 if head_imgurl == '' else host_url + head_imgurl
 
-            head_imgurl = fileUtil.editImg(article, head_img3, article.head_img3)
+            head_imgurl = fileUtil.editImg(host_url, article, head_img3, article.head_img3)
             article.head_img3 =  article.head_img3 if head_imgurl == '' else host_url + head_imgurl
 
             article.save()
